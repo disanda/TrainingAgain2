@@ -228,13 +228,13 @@ for i in range(epoch):
 				image_frame_dim = int(np.floor(np.sqrt(sample_num)))
 				samples = G(test_z)
 				samples = (samples + 1) / 2
-				torchvision.utils.save_image(samples, save_dir+'/%d_Epoch—d_c.png' % i, nrow=10)
+				torchvision.utils.save_image(samples, save_dir+'/%d_%d_Epoch—d_c.png' % (i,j), nrow=10)
 				a,b,c = D(samples)
 				test_z2 = torch.cat([a, b, c], 1)
 				samples2 = G(test_z2)
 				img = torch.cat((samples[:8],samples2[:8]))
 				img = (img + 1) / 2
-				torchvision.utils.save_image(img, save_dir + '/%d_Epoch-rc.png' % i, nrow=8)
+				torchvision.utils.save_image(img, save_dir + '/%d_%d_Epoch-rc.png' % (i,j), nrow=8)
 				train_hist['total_time'].append(time.time() - start_time)
 				with open(save_root+'lossAll.txt', 'a') as f:
 						print('----',file=f)
