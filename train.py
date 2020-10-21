@@ -145,7 +145,8 @@ for i in range(epoch):
 			c_d = torch.zeros((batch_size, c_d_num)).scatter_(1, c_d_true.type(torch.LongTensor).unsqueeze(1), 1)
 		else:
 			c_d = torch.from_numpy(np.random.multinomial(1, c_d_num * [float(1.0 / c_d_num)],size=[batch_size])).type(torch.FloatTensor)#投骰子函数,随机化y_disc_
-		c_c = torch.from_numpy(np.random.uniform(-1, 1, size=(batch_size, c_c_num))).type(torch.FloatTensor)
+		c_d = c_d.to(device)
+		c_c = torch.from_numpy(np.random.uniform(-1, 1, size=(batch_size, c_c_num))).type(torch.FloatTensor).to(device)
 # update D1 network
 		# D_optimizer.zero_grad()
 		# y_f = G(z, c_c, c_d)
@@ -208,7 +209,7 @@ for i in range(epoch):
 		y_info = G(latend_c)
 		d_f_3 = D(y_info)
 		D_disc_info, D_cont_info = d_f_3[:,z_dim_num:z_dim_num + c_d_num], d_f_3[:, z_dim_num + c_d_num:]
-		disc_loss = CE_loss(D_disc_info, torch.max(c_d, 1)[1].to(device))#第二个是将Label由one-hot转化为10进制数组
+		disc_loss = CE_loss(D_disc_info, torch.max(c_d, 1)[1])#第二个是将Label由one-hot转化为10进制数组
 		cont_loss = (D_cont_info - c_c)**2
 		info_loss = disc_loss + cont_loss*c_c_num
 		info_loss = info_loss.mean()
