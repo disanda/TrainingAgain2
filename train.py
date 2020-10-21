@@ -122,6 +122,7 @@ for i in range(column):
 test_z[:,z_dim_num+c_d_num:]=sample_z_c
 #print(z_a[:,96:104])
 
+test_z = test_z.to(device)
 
 #----------------- Training ------------
 G.train()
