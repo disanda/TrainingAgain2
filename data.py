@@ -72,7 +72,7 @@ def make_dataset(dataset_name, batch_size,img_size,drop_remainder=True, shuffle=
             ])
         dataset = DatasetFromFolder(path='',size=64)
         img_shape = (img_size, img_size, 3)
-    elif dataset_name == 'celeba_HQ':
+    elif dataset_name == 'celebaHQ':
         transform_128 = transforms.Compose([
             transforms.Resize(size=(img_size, img_size)),
             transforms.ToTensor(),
