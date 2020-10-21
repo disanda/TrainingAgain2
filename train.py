@@ -208,7 +208,7 @@ for i in range(epoch):
 		y_info = G(latend_c)
 		d_f_3 = D(y_info)
 		D_disc_info, D_cont_info = d_f_3[:,z_dim_num:z_dim_num + c_d_num], d_f_3[:, z_dim_num + c_d_num:]
-		disc_loss = CE_loss(D_disc_info, torch.max(c_d, 1)[1])#第二个是将Label由one-hot转化为10进制数组
+		disc_loss = CE_loss(D_disc_info, torch.max(c_d, 1)[1].to(device))#第二个是将Label由one-hot转化为10进制数组
 		cont_loss = (D_cont_info - c_c)**2
 		info_loss = disc_loss + cont_loss*c_c_num
 		info_loss = info_loss.mean()
