@@ -19,10 +19,12 @@ import functools
 #--------------- Setting Params ---------
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--name', dest='experiment_name', default='3dmmnist_wmw+_cd20_cc20_lamb20_fc3_v2')
+parser.add_argument('--name', dest='experiment_name', default='celeba256_dim256_AG_CE')
 args = parser.parse_args()
+experiment_name = args.experiment_name+'_'+'V1'
 
 gpu_mode = True
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #SUPERVISED = True
 SUPERVISED = False
 batch_size = 32
@@ -32,7 +34,6 @@ c_c_num = 36
 input_size = z_dim_num+c_d_num+c_c_num 
 img_channel = 3
 epoch = 10
-experiment_name = args.experiment_name+'_'+gp_mode
 img_size = 256 
 
 if not os.path.exists('./info_output/'):
@@ -145,7 +146,7 @@ for i in range(c_d_num_t):
 		x = i*c_c_num_t
 		sample_c[ (x+j)*c_c_scale_t: (x+j+1)*c_c_scale_t , j ]=temp_c
 
-test_z = torch.cat([sample_z, sample_d, sample_c], 1)
+test_z = torch.cat([sample_z, sample_d, sample_c], 1).to(device)
 
 #sample_c[ 3*c_c_scale: (4)*c_c_scale , 0 ]=temp_c
 # print('------------')
@@ -173,6 +174,7 @@ for i in range(epoch):
 	j=0
 	#for y, c_d_true in tqdm.tqdm(data_loader):
 	for y in tqdm.tqdm(data_loader):
+	#for j in range(5000):
 		j = j + 1
 		z = torch.rand((batch_size, z_dim_num))
 		if SUPERVISED == True:
@@ -180,8 +182,6 @@ for i in range(epoch):
 		else:
 			c_d = torch.from_numpy(np.random.multinomial(1, c_d_num * [float(1.0 / c_d_num)],size=[batch_size])).type(torch.FloatTensor)#投骰子函数,随机化y_disc_
 		c_c = torch.from_numpy(np.random.uniform(-1, 1, size=(batch_size, c_c_num))).type(torch.FloatTensor)
-		if gpu_mode:
-			y, z, c_d, c_c = y.cuda(), z.cuda(), c_d.cuda(), c_c.cuda()
 # update D1 network
 		# D_optimizer.zero_grad()
 		# y_f = G(z, c_c, c_d)
@@ -198,14 +198,29 @@ for i in range(epoch):
 		# D_loss.backward(retain_graph=True)
 		# D_optimizer.step()
 
-# updata D2 network
+# updata D2 network v2: 不用GT
+		# D_optimizer.zero_grad()
+		# latend_c = torch.cat([z, c_c, c_d], 1).to(device)
+		# y_f = G2(latend_c)
+		# D_fake, D_fake_d, D_fake_c = D(y_f)
+		# y_f = G2(latend_c)
+		# D_real_loss = BCE_loss(D_real, d_real_flag)#1
+		# D_fake_loss = BCE_loss(D_fake, d_fake_flag)#0
+		# D_loss = D_real_loss + D_fake_loss
+		# train_hist['D_loss'].append(D_loss.item())
+		# D_loss.backward(retain_graph=True)
+		# D_optimizer.step()
+
+# update D2 network
 		D_optimizer.zero_grad()
-		y_f = G2(z, c_c, c_d)
-		D_real, _, _ = D(y)
+		latend_c = torch.cat([z, c_c, c_d], 1).to(device)
+		y = y.to(device)
+		y_f = G(latend_c)
+		D_real, _, _ = D()
 		D_fake, _, _ = D(y_f)
 		D_real_loss = BCE_loss(D_real, d_real_flag)#1
 		D_fake_loss = BCE_loss(D_fake, d_fake_flag)#0
-		D_loss = D_real_loss + D_fake_loss
+		D_loss = D_real_loss + D_fake_loss + gp
 		train_hist['D_loss'].append(D_loss.item())
 		D_loss.backward(retain_graph=True)
 		D_optimizer.step()
