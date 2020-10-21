@@ -56,7 +56,8 @@ train_hist['per_epoch_time'] = []
 train_hist['total_time'] = []
 
 #dataSets
-transform_128 = transforms.Compose([transforms.Resize(size=(img_size, img_size)),transforms.ToTensor()]) #transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+transform_128 = transforms.Compose([torchvision.transforms.Resize(size=(img_size, img_size)),torchvision.transforms.ToTensor()]) 
+#transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 path_128 = 'F:/dataSet2/CelebAMask-HQ/CelebA-HQ-img'
 #path_128 = '/home/disanda/Desktop/dataSet/celeba-hq-download/celeba-128'
 #path_128 = '/_yucheng/dataSet/CelebAMask-HQ/CelebAMask-HQ/CelebA-HQ-img'
