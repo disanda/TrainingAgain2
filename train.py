@@ -66,6 +66,9 @@ import network.network_1_SSencoder as net2
 G = net2.Generator_SS().to(device)
 D = net2.Discriminator_SS().to(device)
 
+BCE_loss = nn.BCELoss()
+CE_loss = nn.CrossEntropyLoss()
+MSE_loss = nn.MSELoss()
 G_optimizer = optim.Adam(G.parameters(),  betas=(0.5, 0.99),amsgrad=True)
 D_optimizer = optim.Adam(D.parameters(), lr=0.0002,betas=(0.5, 0.99),amsgrad=True)
 info_optimizer = optim.Adam(itertools.chain(G.parameters(), D.parameters()),lr=0.0001,betas=(0.6, 0.95),amsgrad=True)#G,D都更新
