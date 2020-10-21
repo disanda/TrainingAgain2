@@ -23,7 +23,7 @@ experiment_name = args.experiment_name+'_'+'V1'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #SUPERVISED = True
 SUPERVISED = False
-batch_size = 32
+batch_size = 5
 z_dim_num = 128
 c_d_num = 92
 c_c_num = 36
@@ -181,8 +181,8 @@ for i in range(epoch):
 		latend_c = torch.cat([z, c_c, c_d], 1).to(device)
 		y = y.to(device)
 		y_f = G(latend_c)
-		print(y.shape)
-		print(y_f.shape)
+		#print(y.shape)
+		#print(y_f.shape)
 		d_t = D(y)
 		D_real = torch.sigmoid(d_t[:, z_dim_num])
 		d_f = D(y_f)
@@ -220,28 +220,27 @@ for i in range(epoch):
 		if ((j + 1) % 100) == 0:
 			with open(save_root+'setting.txt', 'a') as f:
 				print('----',file=f)
-				print("Epoch: [%2d] [%4d/%4d] D_loss: %.8f, G_loss: %.8f, info_loss: %.8f" %((i + 1), (j + 1), train_loader.dataset.__len__() // batch_size, D_loss.item(), G_loss.item(), info_loss.item()),file=f)
+				print("Epoch: [%2d] [%4d/%4d] D_loss: %.8f, G_loss: %.8f, info_loss: %.8f" %((i + 1), (j + 1), data_loader.dataset.__len__() // batch_size, D_loss.item(), G_loss.item(), info_loss.item()),file=f)
 				print('----',file=f)
+			with torch.no_grad():# save2img
+				G.eval()
+				D.eval()
+				image_frame_dim = int(np.floor(np.sqrt(sample_num)))
+				samples = G(test_z)
+				samples = (samples + 1) / 2
+				torchvision.utils.save_image(samples, save_dir+'/%d_Epoch—d_c.png' % i, nrow=10)
+				a,b,c = D(samples)
+				test_z2 = torch.cat([a, b, c], 1)
+				samples2 = G(test_z2)
+				img = torch.cat((samples[:8],samples2[:8]))
+				img = (img + 1) / 2
+				torchvision.utils.save_image(img, save_dir + '/%d_Epoch-rc.png' % i, nrow=8)
+				train_hist['total_time'].append(time.time() - start_time)
+				with open(save_root+'lossAll.txt', 'a') as f:
+						print('----',file=f)
+						print(train_hist,file=f)
+						print('----',file=f)
 	print('epoch:'+str(i))
-# save2img
-	with torch.no_grad():
-		G.eval()
-		D.eval()
-		image_frame_dim = int(np.floor(np.sqrt(sample_num)))
-		samples = G(test_z)
-		samples = (samples + 1) / 2
-		torchvision.utils.save_image(samples, save_dir+'/%d_Epoch—d_c.png' % i, nrow=10)
-		a,b,c = D(samples)
-		test_z2 = torch.cat([a, b, c], 1)
-		samples2 = G(test_z2)
-		img = torch.cat((samples[:8],samples2[:8]))
-		img = (img + 1) / 2
-		torchvision.utils.save_image(img, save_dir + '/%d_Epoch-rc.png' % i, nrow=8)
-		train_hist['total_time'].append(time.time() - start_time)
-		with open(save_root+'lossAll.txt', 'a') as f:
-				print('----',file=f)
-				print(train_hist,file=f)
-				print('----',file=f)
 	if i%3 == 0:
 		torch.save({'epoch': epoch + 1,'G': G.state_dict()},'%s/Epoch_(%d).pth' % (ckpt_dir, epoch + 1))#save model
 		torch.save({'epoch': epoch + 1,'D': D.state_dict()},'%s/Epoch_(%d).pth' % (ckpt_dir, epoch + 1))#save model
