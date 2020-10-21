@@ -29,7 +29,9 @@ toggle_grad(netG2,False)
 paraDictG1 = dict(netG1.named_parameters()) # pre_model weight dict
 for i,j in netG2.named_parameters():
 	if i in paraDictG1.keys():
-		w = paraDict[i]
+		w = paraDictG1[i]
+		print(w)
+		print(j)
 		j.copy_(w)
 toggle_grad(netG2,True)
 
