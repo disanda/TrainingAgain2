@@ -23,8 +23,10 @@ netD1.load_state_dict(torch.load(pathD1,map_location=device))
 netG2 = net2.Generator_SS()
 netD2 = net2.Discriminator_SS()
 
-print(netG1.named_parameters())
-print(netG2.named_parameters())
+print(netG1)
+print(dict(netG1.named_parameters()).keys())
+print(netG2)
+print(dict(netG2.named_parameters()).keys())
 
 #----------- param load ------------
 # toggle_grad(netG1,False)
