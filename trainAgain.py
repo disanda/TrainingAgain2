@@ -79,9 +79,11 @@ def toggle_grad(model, requires_grad):
         p.requires_grad_(requires_grad)
 
 netG1 = net1.Generator(input_dim=256, output_channels = 3, image_size=256, scale=8)# in: [-1,512], depth:0-4,1-8,2-16,3-32,4-64,5-128,6-256,7-512,8-1024
-netG1.load_state_dict(torch.load('./pre-model/GAN_GEN_SHADOW_8.pth',map_location=device)) #shadow的效果要好一些 
+pathG1 = 'F:/pre-model/spectral_norm_celeba256_inputDim256_Scale8_4/checkpoints/Epoch_G(99).pth'
+netG1.load_state_dict(torch.load(pathG1,map_location=device)) #shadow的效果要好一些 
 netD1 = net1.Discriminator_SpectrualNorm(input_dim=256, input_channels = 3, image_size=256, scale=4)# in: [-1,3,1024,1024],out:[], depth:0-4,1-8,2-16,3-32,4-64,5-128,6-256,7-512,8-1024
-netD1.load_state_dict(torch.load('./pre-model/GAN_DIS_8.pth',map_location=device))
+pathD1 = 'F:/pre-model/spectral_norm_celeba256_inputDim256_Scale8_4/checkpoints/Epoch_D(99).pth'
+netD1.load_state_dict(torch.load(pathD1,map_location=device))
 
 netG2 = net2.Generator_SS()
 netD2 = net2.Discriminator_SS()
