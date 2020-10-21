@@ -92,7 +92,7 @@ with open(save_root+'setting.txt', 'w') as f:
 c_d_num_t = 8
 c_c_num_t = 2
 c_c_scale_t = 10 # 一个连续变量c_c中的刻度
-sample_num =c_d_num*c_c_num*c_c_scale
+sample_num =c_d_num*c_c_num*c_c_scale_t
 
 sample_z = torch.rand((1, z_dim_num)).expand(sample_num, z_dim_num) #每个样本的noize相同
 
