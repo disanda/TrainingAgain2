@@ -63,22 +63,22 @@ data_loader, shape = data.make_dataset(dataset_name='celebaHQ', batch_size=batch
 #-----DCGAN celebaA---------## input_dim=256, Gscale=8, Dscale=4
 import network.network_1_SSencoder as net2
 
-G2 = net2.Generator_SS()
-D2 = net2.Discriminator_SS()
+G = net2.Generator_SS()
+D = net2.Discriminator_SS()
 
-G_optimizer = optim.Adam(G2.parameters(),  betas=(0.5, 0.99),amsgrad=True)
-D_optimizer = optim.Adam(D2.parameters(), lr=0.0002,betas=(0.5, 0.99),amsgrad=True)
-info_optimizer = optim.Adam(itertools.chain(G2.parameters(), D2.parameters()),lr=0.0001,betas=(0.6, 0.95),amsgrad=True)#G,D都更新
+G_optimizer = optim.Adam(G.parameters(),  betas=(0.5, 0.99),amsgrad=True)
+D_optimizer = optim.Adam(D.parameters(), lr=0.0002,betas=(0.5, 0.99),amsgrad=True)
+info_optimizer = optim.Adam(itertools.chain(G.parameters(), D.parameters()),lr=0.0001,betas=(0.6, 0.95),amsgrad=True)#G,D都更新
 
 with open(save_root+'setting.txt', 'w') as f:
 	print('----',file=f)
 	#print(G1,file=f)
 	print('----',file=f)
-	print(G2,file=f)
+	print(G,file=f)
 	print('----',file=f)
 	#print(D1,file=f)
 	print('----',file=f)
-	print(D2,file=f)
+	print(D,file=f)
 	print('----',file=f)
 	print(G_optimizer,file=f)
 	print('----',file=f)
