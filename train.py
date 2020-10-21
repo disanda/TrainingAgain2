@@ -63,8 +63,8 @@ data_loader, shape = data.make_dataset(dataset_name='celebaHQ', batch_size=batch
 #-----DCGAN celebaA---------## input_dim=256, Gscale=8, Dscale=4
 import network.network_1_SSencoder as net2
 
-G = net2.Generator_SS()
-D = net2.Discriminator_SS()
+G = net2.Generator_SS().to(device)
+D = net2.Discriminator_SS().to(device)
 
 G_optimizer = optim.Adam(G.parameters(),  betas=(0.5, 0.99),amsgrad=True)
 D_optimizer = optim.Adam(D.parameters(), lr=0.0002,betas=(0.5, 0.99),amsgrad=True)
