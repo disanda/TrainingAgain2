@@ -11,6 +11,7 @@ from PIL import Image
 import time
 import tqdm
 import random
+import data
 
 #--------------- Setting Params ---------
 
@@ -56,13 +57,7 @@ train_hist['per_epoch_time'] = []
 train_hist['total_time'] = []
 
 #dataSets
-transform_128 = torchvision.transforms.Compose([torchvision.transforms.Resize(size=(img_size, img_size)),torchvision.transforms.ToTensor()]) 
-#transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-path_128 = 'F:/dataSet2/CelebAMask-HQ/CelebA-HQ-img'
-#path_128 = '/home/disanda/Desktop/dataSet/celeba-hq-download/celeba-128'
-#path_128 = '/_yucheng/dataSet/CelebAMask-HQ/CelebAMask-HQ/CelebA-HQ-img'
-dataset = DatasetFromFolder(path=path_128,transform=transform_128,channels=3)
-data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
+data_loader, shape = data.make_dataset(dataset_name='celebaHQ', batch_size, img_size, pin_memory=True)
 
 
 #---------------- Pre-Model ------------
