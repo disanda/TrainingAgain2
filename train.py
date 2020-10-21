@@ -179,29 +179,32 @@ for i in range(epoch):
 		y_f = G(latend_c)
 		print(y.shape)
 		print(y_f.shape)
-		D_real, _, _ = D(y)
-		D_fake, _, _ = D(y_f)
+		d_t = D(y)
+		D_real = torch.sigmoid(d_t[:, z_dim_num])
+		d_f = D(y_f)
+		D_fake = torch.sigmoid(d_f[:, z_dim_num])
 		D_real_loss = BCE_loss(D_real, d_real_flag)#1
 		D_fake_loss = BCE_loss(D_fake, d_fake_flag)#0
-		D_loss = D_real_loss + D_fake_loss + gp
+		D_loss = D_real_loss + D_fake_loss
 		train_hist['D_loss'].append(D_loss.item())
 		D_loss.backward(retain_graph=True)
 		D_optimizer.step()
 
 # update G network
 		G_optimizer.zero_grad()
-		y_f = G(z, c_c, c_d)
-		D_fake,D_disc,D_cont = D(y_f)
-		G_loss = BCE_loss(D_fake, d_real_flag)
-		#G_loss = g_loss_fn(D_fake)
+		d_f_2 = D(y_f)
+		D_fake_2 = torch.sigmoid(d_f_2[:, z_dim_num])
+		G_loss = BCE_loss(D_fake_2, d_real_flag)
 		train_hist['G_loss'].append(G_loss.item())
 		G_loss.backward(retain_graph=True)
 		G_optimizer.step()
+
 # information loss
 		D_optimizer.zero_grad() #这两个网络不清零，梯度就会乱掉,训练失败
 		G_optimizer.zero_grad()
-		y_info = G(z, c_c, c_d)
-		_,D_disc_info,D_cont_info = D(y_info)
+		y_info = G(latend_c)
+		d_f_3 = D(y_info)
+		c_d, c_c = d_f_3[:,z_dim_num:z_dim_num + c_d_num], d_f_3[:, z_dim_num + c_d_num:]
 		disc_loss = CE_loss(D_disc_info, torch.max(c_d, 1)[1])#第二个是将Label由one-hot转化为10进制数组
 		cont_loss = (D_cont_info - c_c)**2
 		info_loss = disc_loss + cont_loss*c_c_num
@@ -218,15 +221,15 @@ for i in range(epoch):
 	print('epoch:'+str(i))
 # save2img
 	with torch.no_grad():
-		G1.eval()
-		D2.eval()
+		G.eval()
+		D.eval()
 		image_frame_dim = int(np.floor(np.sqrt(sample_num)))
-		samples = G2(test_z)
+		samples = G(test_z)
 		samples = (samples + 1) / 2
 		torchvision.utils.save_image(samples, save_dir+'/%d_Epoch—d_c.png' % i, nrow=10)
-		a,b,c = D2(samples)
+		a,b,c = D(samples)
 		test_z2 = torch.cat([a, b, c], 1)
-		samples2 = G2(test_z2)
+		samples2 = G(test_z2)
 		img = torch.cat((samples[:8],samples2[:8]))
 		img = (img + 1) / 2
 		torchvision.utils.save_image(img, save_dir + '/%d_Epoch-rc.png' % i, nrow=8)
@@ -236,7 +239,7 @@ for i in range(epoch):
 				print(train_hist,file=f)
 				print('----',file=f)
 	if i%3 == 0:
-		torch.save({'epoch': epoch + 1,'G': G2.state_dict()},'%s/Epoch_(%d).pth' % (ckpt_dir, epoch + 1))#save model
-		torch.save({'epoch': epoch + 1,'D': D2.state_dict()},'%s/Epoch_(%d).pth' % (ckpt_dir, epoch + 1))#save model
+		torch.save({'epoch': epoch + 1,'G': G.state_dict()},'%s/Epoch_(%d).pth' % (ckpt_dir, epoch + 1))#save model
+		torch.save({'epoch': epoch + 1,'D': D.state_dict()},'%s/Epoch_(%d).pth' % (ckpt_dir, epoch + 1))#save model
 
 #loss_plot(self.train_hist, os.path.join(self.save_dir, self.dataset, self.model_name), self.model_name)
