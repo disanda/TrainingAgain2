@@ -23,26 +23,27 @@ netD1.load_state_dict(torch.load(pathD1,map_location=device))
 netG2 = net2.Generator_SS()
 netD2 = net2.Discriminator_SS()
 
-#----------- param load ------------
-toggle_grad(netG1,False)
-toggle_grad(netG2,False)
-paraDictG1 = dict(netG1.named_parameters()) # pre_model weight dict
-for i,j in netG2.named_parameters():
-	if i in paraDictG1.keys():
-		w = paraDictG1[i]
-		print(w)
-		print(j)
-		j.copy_(w)
-toggle_grad(netG2,True)
+print(G1)
+print(G2)
 
-toggle_grad(netD1,False)
-toggle_grad(netD2,False)
-paraDictD1 = dict(netD1.named_parameters()) # pre_model weight dict
-for i,j in netD2.named_parameters():
-	if i in paraDictD1.keys():
-		w = paraDict[i]
-		j.copy_(w)
-toggle_grad(netD2,True)
+#----------- param load ------------
+# toggle_grad(netG1,False)
+# toggle_grad(netG2,False)
+# paraDictG1 = dict(netG1.named_parameters()) # pre_model weight dict
+# for i,j in netG2.named_parameters():
+# 	if i in paraDictG1.keys():
+# 		w = paraDictG1[i]
+# 		j.copy_(w)
+# toggle_grad(netG2,True)
+
+# toggle_grad(netD1,False)
+# toggle_grad(netD2,False)
+# paraDictD1 = dict(netD1.named_parameters()) # pre_model weight dict
+# for i,j in netD2.named_parameters():
+# 	if i in paraDictD1.keys():
+# 		w = paraDict[i]
+# 		j.copy_(w)
+# toggle_grad(netD2,True)
 
 
 #---------test input & output---------
