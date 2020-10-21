@@ -20,7 +20,6 @@ parser.add_argument('--name', dest='experiment_name', default='celeba256_dim256_
 args = parser.parse_args()
 experiment_name = args.experiment_name+'_'+'V1'
 
-gpu_mode = True
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #SUPERVISED = True
 SUPERVISED = False
