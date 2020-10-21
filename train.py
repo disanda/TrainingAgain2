@@ -16,7 +16,7 @@ import data
 #--------------- Setting Params ---------
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--name', dest='experiment_name', default='celeba256_dim256_AG_CE')
+parser.add_argument('--name', dest='experiment_name', default='celeba256_dim256_CE')
 args = parser.parse_args()
 experiment_name = args.experiment_name+'_'+'V1'
 
@@ -63,8 +63,8 @@ data_loader, shape = data.make_dataset(dataset_name='celebaHQ', batch_size=batch
 #-----DCGAN celebaA---------## input_dim=256, Gscale=8, Dscale=4
 import network.network_1_SSencoder as net2
 
-netG2 = net2.Generator_SS()
-netD2 = net2.Discriminator_SS()
+G2 = net2.Generator_SS()
+D2 = net2.Discriminator_SS()
 
 G_optimizer = optim.Adam(G2.parameters(),  betas=(0.5, 0.99),amsgrad=True)
 D_optimizer = optim.Adam(D2.parameters(), lr=0.0002,betas=(0.5, 0.99),amsgrad=True)
