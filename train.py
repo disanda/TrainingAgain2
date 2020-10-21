@@ -72,11 +72,11 @@ info_optimizer = optim.Adam(itertools.chain(G2.parameters(), D2.parameters()),lr
 
 with open(save_root+'setting.txt', 'w') as f:
 	print('----',file=f)
-	print(G1,file=f)
+	#print(G1,file=f)
 	print('----',file=f)
 	print(G2,file=f)
 	print('----',file=f)
-	print(D1,file=f)
+	#print(D1,file=f)
 	print('----',file=f)
 	print(D2,file=f)
 	print('----',file=f)
