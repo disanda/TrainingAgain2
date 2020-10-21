@@ -140,7 +140,7 @@ for i in range(epoch):
 	for y in tqdm.tqdm(data_loader):
 	#for j in range(5000):
 		j = j + 1
-		z = torch.rand((batch_size, z_dim_num))
+		z = torch.rand((batch_size, z_dim_num)).to(device)
 		if SUPERVISED == True:
 			c_d = torch.zeros((batch_size, c_d_num)).scatter_(1, c_d_true.type(torch.LongTensor).unsqueeze(1), 1)
 		else:
