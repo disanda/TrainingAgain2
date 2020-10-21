@@ -227,7 +227,7 @@ for i in range(epoch):
 				image_frame_dim = int(np.floor(np.sqrt(sample_num)))
 				samples = G(test_z)
 				samples = (samples + 1) / 2
-				torchvision.utils.save_image(samples, save_dir+'/%d_%d_Epoch—d_c.png' % (i,j), nrow=10)
+				torchvision.utils.save_image(samples, save_dir+'/%d_%d_Epoch—d_c.png' % (i,j), nrow=8)
 				test_z2 = D(samples)
 				samples2 = G(test_z2)
 				img = torch.cat((samples[:8],samples2[:8]))
