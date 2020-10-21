@@ -23,7 +23,7 @@ experiment_name = args.experiment_name+'_'+'V1'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #SUPERVISED = True
 SUPERVISED = False
-batch_size = 5
+batch_size = 16
 z_dim_num = 128
 c_d_num = 92
 c_c_num = 36
@@ -91,39 +91,36 @@ with open(save_root+'setting.txt', 'w') as f:
 	print('----',file=f)
 
 #----------------- Self-Supervised Constants ----------
-#这是个排列组合的问题
-c_d_num_t = 8
-c_c_num_t = 2
-c_c_scale_t = 10 # 一个连续变量c_c中的刻度
-sample_num =c_d_num*c_c_num*c_c_scale_t
 
-sample_z = torch.rand((1, z_dim_num)).expand(sample_num, z_dim_num) #每个样本的noize相同
+sample_num = 64
+column = 8
+row = 8
+gap = 0 # gap + row < c_d_num
 
-sample_d = torch.zeros(sample_num, c_d_num_t)#[-1,c_d]
+##--------------z： 每个变量的 noise一样-----------
+test_z = torch.zeros((sample_num, input_size)) #[-1,128]
+sample_z = torch.rand((1, z_dim_num)).expand(sample_num, z_dim_num) # [-1,64]
+test_z[:,:z_dim_num]=sample_z
 
-sample_c = torch.zeros(sample_num, c_c_num_t)#[-1,c_c]
-temp_c = torch.linspace(-1, 1, c_c_scale_t)		#-1->1的等差数列
 
-for i in range(c_d_num_t):
-	sample_d[ i*c_c_num_t*c_c_scale_t: (i+1)*c_c_num_t*c_c_scale_t, i]=1
-	for j in range(c_c_num_t):
-		x = i*c_c_num_t
-		sample_c[ (x+j)*c_c_scale_t: (x+j+1)*c_c_scale_t , j ]=temp_c
+##---------------z_d: 每个z_d一个one-hot位，每行一样---------
+sample_z_d = torch.zeros((sample_num, c_d_num)) #[64,32]
+for i in range(row):
+	for j in range(column):
+		sample_z_d[i*8+j,i+gap]=1
+#print(z_d[8:16])
+test_z[:,z_dim_num:z_dim_num+c_d_num]=sample_z_d
+#print(z_a[:,64:72])
 
-test_z = torch.cat([sample_z, sample_d, sample_c], 1).to(device)
-
-#sample_c[ 3*c_c_scale: (4)*c_c_scale , 0 ]=temp_c
-# print('------------')
-# print(sample_z.shape) # -1 32
-# print(sample_d.shape) # -1 2
-# print(sample_c.shape)
-# print(sample_z)
-# print(sample_d)
-# print(sample_c)
-# #print(sample_z2[1])
-# z = torch.cat([sample_z, sample_d, sample_c], 1)
-# for i in range(5):
-# 	print(z[i])
+##---------------z_c: 每个z_c一个维度的连续变量，每行变化一个维度---------
+sample_z_c = torch.zeros((sample_num, c_c_num)) #[64,32]
+temp_c = torch.linspace(-1, 1, row)
+for i in range(column):
+	for j in range(row):
+		sample_z_c[i*8+j,i+gap]=temp_c[j]
+#print(z_c[8:16])
+test_z[:,z_dim_num+c_d_num:]=sample_z_c
+#print(z_a[:,96:104])
 
 
 #----------------- Training ------------
@@ -216,6 +213,7 @@ for i in range(epoch):
 		train_hist['info_loss'].append(info_loss.item())
 		info_loss.backward()
 		info_optimizer.step()
+# test
 		train_hist['per_epoch_time'].append(time.time() - epoch_start_time)
 		if ((j + 1) % 100) == 0:
 			with open(save_root+'setting.txt', 'a') as f:
@@ -229,8 +227,7 @@ for i in range(epoch):
 				samples = G(test_z)
 				samples = (samples + 1) / 2
 				torchvision.utils.save_image(samples, save_dir+'/%d_%d_Epoch—d_c.png' % (i,j), nrow=10)
-				a,b,c = D(samples)
-				test_z2 = torch.cat([a, b, c], 1)
+				test_z2 = D(samples)
 				samples2 = G(test_z2)
 				img = torch.cat((samples[:8],samples2[:8]))
 				img = (img + 1) / 2
