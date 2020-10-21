@@ -78,10 +78,10 @@ def make_dataset(dataset_name, batch_size,img_size,drop_remainder=True, shuffle=
             transforms.ToTensor(),
             #transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
             ])
-        path_128 = 'F:/dataSet2/CelebAMask-HQ/CelebA-HQ-img'
-        #path_128 = '/home/disanda/Desktop/dataSet/celeba-hq-download/celeba-128'
-        #path_128 = '/_yucheng/dataSet/CelebAMask-HQ/CelebAMask-HQ/CelebA-HQ-img'
-        dataset = DatasetFromFolder(path=path_128,transform=transform_128,channels=3)
+        #path= 'F:/dataSet2/CelebAMask-HQ/CelebA-HQ-img'
+        path = '/home/disanda/Desktop/dataSet/CelebaMask-HQ/img-30000/CelebA-HQ-img/'
+        #path = '/_yucheng/dataSet/CelebAMask-HQ/CelebAMask-HQ/CelebA-HQ-img'
+        dataset = DatasetFromFolder(path=path,transform=transform_128,channels=3)
         img_shape = (img_size, img_size, 3)
     else:
         raise NotImplementedError
