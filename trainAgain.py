@@ -57,7 +57,7 @@ train_hist['per_epoch_time'] = []
 train_hist['total_time'] = []
 
 #dataSets
-data_loader, shape = data.make_dataset(dataset_name='celebaHQ', batch_size, img_size, pin_memory=True)
+data_loader, shape = data.make_dataset(dataset_name='celebaHQ', batch_size=batch_size, img_size=img_size, pin_memory=True)
 
 
 #---------------- Pre-Model ------------
