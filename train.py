@@ -177,6 +177,8 @@ for i in range(epoch):
 		latend_c = torch.cat([z, c_c, c_d], 1).to(device)
 		y = y.to(device)
 		y_f = G(latend_c)
+		print(y.shape)
+		print(y_f.shape)
 		D_real, _, _ = D(y)
 		D_fake, _, _ = D(y_f)
 		D_real_loss = BCE_loss(D_real, d_real_flag)#1
