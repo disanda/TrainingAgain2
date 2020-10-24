@@ -61,7 +61,7 @@ class discriminator_mwm(nn.Module):
             nn.LeakyReLU(0.2),
             spectral_nrom(nn.Conv2d(1024, 2048, 4, 2, 1, bias = False)),
             nn.LeakyReLU(0.2),             
-            nn.Conv2d(2048, 256, 4, 2, 1, bias = False)
+            nn.Conv2d(2048, 256, 4, 2, 1, bias = False),
             nn.LeakyReLU(0.2),
         )
         self.fc = nn.Sequential(
