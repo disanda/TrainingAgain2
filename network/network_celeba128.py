@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import torch
 import torch.nn as nn
-import loss_norm_gp
+#import loss_norm_gp
 import torch.nn.utils.spectral_norm as spectral_norm
 
 #-----------------MWM-GAN-v1--------------------多一个网络Q输出C即可
@@ -36,7 +36,6 @@ class generator_mwm(nn.Module):
             nn.ConvTranspose2d(256, output_channel, 4, 2, 1,bias=False),
             nn.Tanh(),
         )
-        loss_norm_gp.initialize_weights(self)
     def forward(self, input, dist_code, cont_code):
         x = torch.cat([input, dist_code, cont_code], 1)
         x = self.fc(x)
@@ -71,7 +70,6 @@ class discriminator_mwm(nn.Module):
             nn.Linear(1024, 256),
             nn.LeakyReLU(0.2),
         )
-        loss_norm_gp.initialize_weights(self)
     def forward(self, input):
         x = self.conv(input)
         x = x.view(-1, 256*4*4) 
