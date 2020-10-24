@@ -52,13 +52,13 @@ class discriminator_mwm(nn.Module):
         self.len_discrete_code = len_discrete_code  # categorical distribution (i.e. label)
         self.len_continuous_code = len_continuous_code  # gaussian distribution (e.g. rotation, thickness)
         self.conv = nn.Sequential(
-            spectral_nrom(nn.Conv2d(self.input_dim, 256, 4, 2, 1, bias = False)),#input_size/2
+            spectral_norm(nn.Conv2d(self.input_dim, 256, 4, 2, 1, bias = False)),#input_size/2
             nn.LeakyReLU(0.2),
-            spectral_nrom(nn.Conv2d(256, 512, 4, 2, 1, bias = False)),
+            spectral_norm(nn.Conv2d(256, 512, 4, 2, 1, bias = False)),
             nn.LeakyReLU(0.2),
-            spectral_nrom(nn.Conv2d(512, 1024, 4, 2, 1, bias = False)),
+            spectral_norm(nn.Conv2d(512, 1024, 4, 2, 1, bias = False)),
             nn.LeakyReLU(0.2),
-            spectral_nrom(nn.Conv2d(1024, 2048, 4, 2, 1, bias = False)),
+            spectral_norm(nn.Conv2d(1024, 2048, 4, 2, 1, bias = False)),
             nn.LeakyReLU(0.2),             
             nn.Conv2d(2048, 256, 4, 2, 1, bias = False),
             nn.LeakyReLU(0.2),
