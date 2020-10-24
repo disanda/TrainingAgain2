@@ -16,7 +16,7 @@ import data
 #--------------- Setting Params ---------
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--name', dest='experiment_name', default='celeba256_dim256_CE')
+parser.add_argument('--name', dest='experiment_name', default='celeba128_dim200_cd28_cc28')
 args = parser.parse_args()
 experiment_name = args.experiment_name+'_'+'V1'
 
@@ -61,10 +61,10 @@ data_loader, shape = data.make_dataset(dataset_name='celebaHQ', batch_size=batch
 
 #---------------- Pre-Model ------------
 #-----DCGAN celebaA---------## input_dim=256, Gscale=8, Dscale=4
-import network.network_1_SSencoder as net2
+import network.network_celeba128 as net2
 
-G = net2.Generator_SS().to(device)
-D = net2.Discriminator_SS().to(device)
+G = net2.generator_mwm().to(device)
+D = net2.discriminator_mwm().to(device)
 
 BCE_loss = nn.BCELoss()
 CE_loss = nn.CrossEntropyLoss()
@@ -177,9 +177,9 @@ for i in range(epoch):
 
 # update D2 network
 		D_optimizer.zero_grad()
-		latend_c = torch.cat([z, c_c, c_d], 1).to(device)
+		#latend_c = torch.cat([z, c_c, c_d], 1).to(device)
 		y = y.to(device)
-		y_f = G(latend_c)
+		y_f = G(z, c_c, c_d)
 		#print(y.shape)
 		#print(y_f.shape)
 		d_t = D(y)

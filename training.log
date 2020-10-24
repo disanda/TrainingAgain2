@@ -1,2 +1,9 @@
->>>celeba256_dim256_AG_CE 
-#带入真数据训练三变量
+>>>celeba256_dim256_AG_CE_v1
+#带入真数据训练三变量 z_dim_num = 128,c_d_num = 92,c_c_num = 36
+
+>>>celeba256_dim128_AG_CE_v2
+#带入真数据训练三变量, 降低输入维度 z_dim_num = 96,c_d_num = 24,c_c_num = 12
+
+>>>celeba256_dim128_AG_CE_v3
+#带入真数据训练三变量, 降低输入维度(如果效果改善)
+#再在FC前加 1*1 卷积核融合特征，降低fc计算量
