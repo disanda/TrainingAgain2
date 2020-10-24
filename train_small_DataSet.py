@@ -16,21 +16,21 @@ import data
 #--------------- Setting Params ---------
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--name', dest='experiment_name', default='celeba128_dim200_cd28_cc28')
+parser.add_argument('--name', dest='experiment_name', default='movingMnist_size64_dim100_cd20_cc20')
 args = parser.parse_args()
 experiment_name = args.experiment_name+'_'+'V1'
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #SUPERVISED = True
 SUPERVISED = False
-batch_size = 16
-z_dim_num = 200
-c_d_num = 28
-c_c_num = 28
+batch_size = 32
+z_dim_num = 100
+c_d_num = 20
+c_c_num = 20
 input_size = z_dim_num+c_d_num+c_c_num 
-img_channel = 3
+img_channel = 1
 epoch = 100
-img_size = 128 
+img_size = 64 
 
 if not os.path.exists('./info_output/'):
     os.mkdir('./info_output/')
@@ -56,15 +56,23 @@ train_hist['per_epoch_time'] = []
 train_hist['total_time'] = []
 
 #dataSets
-data_loader, shape = data.make_dataset(dataset_name='celebaHQ', batch_size=batch_size, img_size=img_size, pin_memory=True)
+#-------------moving-mnist--------------
+train_set = utils.MovingMNIST(train=True,transform=torchvision.transforms.Normalize(mean=[127.5], std=[127.5]))#[0,255]->[-1,1]
+data_loader = torch.utils.data.DataLoader(
+                 dataset=train_set,
+                 batch_size=batch_size,
+                 shuffle=True,
+                 drop_last=True
+                 )
+
 
 
 #---------------- Pre-Model ------------
 #-----DCGAN celebaA---------## input_dim=256, Gscale=8, Dscale=4
-import network.network_celeba128 as net2
+import network.network_selfgan as net2
 
-G = net2.generator_mwm().to(device)
-D = net2.discriminator_mwm().to(device)
+G = net2.generator_mwm(z_dim=z_dim_num, output_channel=img_channel, input_size=input_size, len_discrete_code=c_d_num, len_continuous_code=c_c_num).to(device)
+D = net2.discriminator_mwm(input_channel=img_channel, output_dim=1, input_size=input_size, len_discrete_code=c_d_num, len_continuous_code=c_c_num).to(device)
 
 BCE_loss = nn.BCELoss()
 CE_loss = nn.CrossEntropyLoss()
@@ -74,7 +82,7 @@ D_optimizer = optim.Adam(D.parameters(), lr=0.0002,betas=(0.5, 0.99),amsgrad=Tru
 info_optimizer = optim.Adam(itertools.chain(G.parameters(), D.parameters()),lr=0.0001,betas=(0.6, 0.95),amsgrad=True)#G,D都更新
 
 with open(save_root+'setting.txt', 'w') as f:
-	print(str(z_dim_num)+'-----'+str(c_d_num)+'-----'+str(c_c_num)+'-----',file=f)
+	print(z_dim_num+'-----'+c_d_num+'-----'+c_c_num+'-----',file=f)
 	print('----',file=f)
 	#print(G1,file=f)
 	print('----',file=f)
@@ -177,7 +185,7 @@ for i in range(epoch):
 
 # update D2 network
 		D_optimizer.zero_grad()
-		#latend_c = torch.cat([z, c_c, c_d], 1).to(device)
+		latend_c = torch.cat([z, c_c, c_d], 1).to(device)
 		y = y.to(device)
 		y_f = G(z, c_c, c_d)
 		#print(y.shape)
@@ -229,8 +237,8 @@ for i in range(epoch):
 				samples = G(sample_z,sample_z_d,sample_z_c)
 				samples = (samples + 1) / 2
 				torchvision.utils.save_image(samples, save_dir+'/%d_%d_Epoch—d_c.png' % (i,j), nrow=8)
-				#z_2,z_d_2,z_c_2 = D(samples)
-				#samples2 = G(z_2,z_d_2,z_c_2)
+				#test_z2 = D(samples)
+				#samples2 = G(test_z2)
 				#img = torch.cat((samples[:8],samples2[:8]))
 				#img = (img + 1) / 2
 				#torchvision.utils.save_image(img, save_dir + '/%d_%d_Epoch-rc.png' % (i,j), nrow=8)
